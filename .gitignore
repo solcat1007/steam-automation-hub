@@ -1,0 +1,81 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+.eggs/
+
+# Virtual environments
+venv/
+.env
+.venv
+env/
+
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+logs/
+*.log
+
+# Configuration (contains secrets)
+config/config.yaml
+config/*.local.yaml
+
+# Sensitive data
+.env
+*.pem
+*.key
+*.token
+secrets/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Dependencies (for SCF deployment)
+cloud/requirements/
+
+# Python type checkers
+.mypy_cache/
+.ruff_cache/
+
+# Coverage
+.coverage
+htmlcov/
+.coverage.*
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Docker
+.docker/
+
+# SCF deployment package
+cloud/*.zip
+*.zip.dep.json
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

@@ -1,0 +1,127 @@
+# Steam Automation Hub - 配置文件示例
+# 复制为 config.yaml 并填入真实配置
+# cp config.example.yaml config.yaml
+
+# ============================================
+# Steam 账号配置
+# ============================================
+steam:
+  username: "your_steam_username"
+  password: "your_steam_password"
+  # 手机令牌共享密钥（Base64 编码）- 用于生成 2FA 验证码
+  shared_secret: ""
+  # 身份密钥（Base64 编码）- 用于交易确认
+  identity_secret: ""
+  # Steam Web API Key（可选，部分功能需要）
+  # 获取地址: https://steamcommunity.com/dev/apikey
+  api_key: ""
+  # 代理设置（可选）
+  proxy: ""  # socks5://127.0.0.1:1080
+
+# ============================================
+# 腾讯云配置（SCF 部署必填）
+# ============================================
+tencent_cloud:
+  secret_id: "your_secret_id"
+  secret_key: "your_secret_key"
+  region: "ap-guangzhou"  # ap-guangzhou / ap-shanghai / ap-beijing
+  # SCF 配置
+  scf:
+    memory_size: 512  # MB
+    timeout: 900      # 秒
+
+# ============================================
+# 通知推送配置
+# ============================================
+notifications:
+  # 企业微信 / 钉钉 / Discord Webhook URL
+  webhook_url: ""
+  # 邮件通知（可选）
+  email: ""
+
+# ============================================
+# 消息监控配置
+# ============================================
+message_monitor:
+  enabled: true
+  # 自动回复规则（可选预定义）
+  auto_reply_rules:
+    - name: "price_check"
+      pattern: "(how much|price|多少钱|价格)"
+      response: "Please check Steam Market for current prices: https://steamcommunity.com/market/"
+    - name: "trade_request"
+      pattern: "(trade|交换|交易)"
+      response: "Send me a trade offer and I'll review it. Thanks!"
+    - name: "greeting"
+      pattern: "(hi|hello|hey|你好|在吗)"
+      response: "Hello! I'm an automated assistant. Leave a message and I'll get back to you."
+  # 消息历史最大保留条数
+  max_history: 1000
+  # 关键词告警
+  alert_keywords:
+    - "urgent"
+    - "scam"
+    - "report"
+
+# ============================================
+# 库存管理配置
+# ============================================
+inventory:
+  enabled: true
+  # 监控的游戏
+  games:
+    - app_id: 730   # CS2
+      context_id: 2
+    - app_id: 570   # Dota 2
+      context_id: 2
+    - app_id: 440   # TF2
+      context_id: 2
+  # 同步间隔（秒）- 本地运行模式
+  sync_interval: 300
+
+# ============================================
+# 交易机器人配置
+# ============================================
+trade_bot:
+  enabled: true
+  # 安全策略
+  security:
+    # 白名单 Steam ID
+    whitelist: []
+    # 黑名单 Steam ID
+    blacklist: []
+    # 单笔交易最大物品数
+    max_items_per_trade: 100
+    # 自动拒绝空报价
+    auto_decline_empty: true
+    # 要求附带留言
+    require_message: false
+  # 物品过滤
+  item_filter:
+    allowed: []
+    blocked: []
+  # 轮询间隔（秒）
+  poll_interval: 30
+
+# ============================================
+# 愿望单追踪配置
+# ============================================
+wishlist:
+  enabled: true
+  # 同步间隔（秒）
+  sync_interval: 3600
+  # 折扣阈值（低于此价格发送提醒，单位：分）
+  price_alert_threshold: 0
+  # 最低折扣百分比才通知（0-100）
+  min_discount_notify: 10
+
+# ============================================
+# 日志配置
+# ============================================
+logging:
+  level: "INFO"  # DEBUG / INFO / WARNING / ERROR
+  file: "logs/steam_hub.log"
+  # 最大日志文件大小（MB）
+  max_size_mb: 10
+  # 保留备份数
+  backup_count: 5

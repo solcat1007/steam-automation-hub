@@ -1,0 +1,82 @@
+# serverless.yml - 腾讯云 SCF 部署配置模板
+# 使用 Serverless Framework 一键部署
+
+service: steam-automation-hub
+
+frameworkVersion: "3"
+
+provider:
+  name: tencent
+  runtime: Python3.12
+  region: ap-guangzhou
+  timeout: 900  # 超时时间（秒），最大 900
+  memorySize: 512  # 内存（MB）
+  environment:
+    variables:
+      # ===== Steam 配置 =====
+      STEAM_USERNAME: ${env:STEAM_USERNAME}
+      STEAM_PASSWORD: ${env:STEAM_PASSWORD}
+      STEAM_SHARED_SECRET: ${env:STEAM_SHARED_SECRET}
+      STEAM_IDENTITY_SECRET: ${env:STEAM_IDENTITY_SECRET}
+
+      # ===== 腾讯云配置 =====
+      TENCENT_SECRET_ID: ${env:TENCENT_SECRET_ID}
+      TENCENT_SECRET_KEY: ${env:TENCENT_SECRET_KEY}
+      TENCENT_REGION: ap-guangzhou
+
+      # ===== 通知配置 =====
+      WEBHOOK_URL: ${env:WEBHOOK_URL}
+      NOTIFY_EMAIL: ${env:NOTIFY_EMAIL}
+
+      # ===== 运行配置 =====
+      LOG_LEVEL: INFO
+      SYNC_INTERVAL: "300"  # 同步间隔（秒）
+
+  vpcConfig:
+    vpcId: ""
+    subnetId: ""
+
+functions:
+  # 主同步函数（定时触发）
+  steamSync:
+    handler: cloud.scf_handler.timer_handler
+    description: "Steam Automation Hub - 定时同步"
+    events:
+      - timer:
+          name: steam_sync_timer
+          cron: "0 */1 * * * * *"  # 每1分钟执行
+          enable: true
+
+  # API 网关入口（手动触发/状态查询）
+  steamApi:
+    handler: cloud.scf_handler.api_gateway_handler
+    description: "Steam Automation Hub - API 接口"
+    events:
+      - apigw:
+          name: steam_hub_api
+          parameters:
+            protocols:
+              - http
+              - https
+            environment: release
+            endpoints:
+              - path: /status
+                method: GET
+              - path: /sync
+                method: POST
+
+plugins:
+  - serverless-tencent-scf
+
+package:
+  exclude:
+    - .git/**
+    - .gitignore
+    - docs/**
+    - config/config.yaml
+    - "*.md"
+    - __pycache__/**
+    - "*.pyc"
+  include:
+    - src/**
+    - cloud/**
