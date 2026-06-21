@@ -1,108 +1,104 @@
-# 🎮 Steam Automation Hub
+# Steam Automation Hub — Steam 全自动 AI 助手
 
-> 基于腾讯云 SCF 的 Steam 全自动 AI 助手，从零搭建到云端上线，一站式解决方案。
+> 基于腾讯云 SCF 的 Steam 全自动 AI 助手 — 消息监控、库存管理、交易机器人、愿望单追踪、市场分析一站式解决方案。
+> **一键云端部署，7x24 小时无人值守，零本地运维。**
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Tencent%20Cloud%20SCF-orange)](https://cloud.tencent.com/product/scf)
+## 项目概述
 
-## 📖 项目简介
+本项目提供了一个完整的 Steam 自动化解决方案，基于腾讯云云函数（SCF）和 GitHub Actions 实现全自动运维。从搭建到上线，全程傻瓜式部署，无需任何服务器管理经验。
 
-Steam Automation Hub 是一套完整的 Steam 自动化工具集，深度集成 Steam Web API 与 SteamKit 协议，支持腾讯云 SCF 云端 7×24 小时无人值守运行。覆盖消息实时监控、库存管理、交易机器人、愿望单追踪等核心场景，完整源码开箱即用，一键部署即可拥有专属 Steam 自动化管家。
+### 包含的核心模块
 
-### 🚀 核心功能
+| 模块 | 功能 |
+|------|------|
+| **消息监控** | Steam 聊天消息实时抓取、自动回复、关键词告警 |
+| **库存管理** | 库存扫描、物品自动上架/下架、批量操作 |
+| **交易机器人** | 自动报价、自动确认、库存核对、交易记录 |
+| **愿望单追踪** | 愿望单游戏价格监控、折扣推送、链接生成 |
+| **市场分析** | 市场物品价格追踪、趋势分析、价格预警 |
 
-| 模块 | 功能 | 说明 |
-|------|------|------|
-| 📨 消息监控 | Steam 消息实时抓取、自动回复、关键词触发 | 基于 SteamKit 长连接，毫秒级响应 |
-| 🎒 库存管理 | 饰品库存同步、自动上架、价格追踪 | 支持 CS2/Dota2/TF2 等多游戏 |
-| 🤖 交易机器人 | 自动接收报价、条件审批、拒绝规则 | 灵活的交易策略引擎 |
-| ⭐ 愿望单追踪 | 愿望单变动监控、降价通知、上新提醒 | 支持多渠道推送 |
-| ☁️ 云端部署 | 腾讯云 SCF + 云数据库，零成本运维 | 一键部署，永久在线 |
+## 技术架构
 
-## 🛠️ 快速开始
+```
+用户 → SCF API 网关 → Steam Web API + Steamworks SDK
+                          ↓
+                    数据处理层 (Python/Node.js)
+                          ↓
+                    云数据库/云存储 → 告警/推送
+```
 
-### 环境要求
+- **运行时**：Python 3.10 / Node.js 18
+- **部署平台**：腾讯云云函数 SCF + API 网关
+- **CI/CD**：GitHub Actions 自动化部署
+- **存储**：腾讯云 COS + 云数据库 Redis
+- **通知**：Server酱 / PushPlus / QQ Bot 多渠道推送
 
-- Python 3.10+
-- 腾讯云账号（用于 SCF 部署）
-- Steam 账号（需开启手机令牌）
+## 快速部署
 
-### 本地运行
+### 前置条件
+1. 腾讯云账号（开通 SCF 和 API 网关）
+2. Steam API Key（从 [Steam Community](https://steamcommunity.com/dev/apikey) 获取）
+3. GitHub 账号（fork 本项目）
 
+### 部署步骤
 ```bash
-# 克隆仓库
-git clone https://github.com/YOUR_USERNAME/steam-automation-hub.git
+# 1. 克隆项目
+git clone https://github.com/solcat1007/steam-automation-hub.git
 cd steam-automation-hub
 
-# 安装依赖
+# 2. 安装依赖
 pip install -r requirements.txt
 
-# 配置
-cp config/config.example.yaml config/config.yaml
-# 编辑 config/config.yaml 填入你的 Steam 凭证
+# 3. 配置环境变量（复制并编辑）
+cp .env.example .env
+# 编辑 .env 填入 Steam API Key、SCF 配置等
 
-# 运行
-python -m src
+# 4. 本地测试
+python main.py --test
+
+# 5. 部署到腾讯云 SCF
+# 按照 docs/DEPLOY.md 中的步骤操作
 ```
 
-### 云端部署
+## 功能特性
 
-```bash
-# 一键部署到腾讯云 SCF
-cd cloud
-pip install -r ../requirements.txt -t .
-python scf_deploy.py
-```
+### Steam 消息监控
+- WebSocket 实时连接 Steam Chat
+- 关键词匹配自动回复
+- 敏感操作告警推送
+- 多语言消息支持
 
-## 📁 项目结构
+### 库存/交易管理
+- 自动接受/拒绝交易报价
+- 库存扫描与 CSV 导出
+- 批量上架/下架市场
+- 价格监控与自动调价
 
-```
-steam-automation-hub/
-├── src/                    # 核心源码
-│   ├── __init__.py         # 包入口
-│   ├── steam_client.py     # Steam API 客户端
-│   ├── message_monitor.py  # 消息监控模块
-│   ├── inventory_manager.py # 库存管理模块
-│   ├── trade_bot.py        # 交易机器人
-│   ├── wishlist_tracker.py # 愿望单追踪
-│   └── utils.py            # 工具函数
-├── cloud/                  # 云端部署
-│   ├── scf_handler.py      # SCF 入口函数
-│   └── serverless.yml      # SCF 配置模板
-├── config/                 # 配置文件
-│   └── config.example.yaml # 示例配置
-├── docs/                   # 文档
-├── requirements.txt        # Python 依赖
-└── README.md
-```
+### 愿望单追踪
+- 多账号愿望单批量管理
+- 折扣推送（邮件/QQ/Server酱）
+- 历史价格走势图
+- 愿望单分享页生成
 
-## ⚙️ 配置说明
+### 市场分析
+- 物品价格历史数据采集
+- 价格波动告警
+- 热门物品排行榜
+- 利润计算器
 
-```yaml
-steam:
-  username: "your_steam_username"
-  password: "your_steam_password"
-  shared_secret: "your_2fa_shared_secret"  # 手机令牌密钥
-  identity_secret: "your_identity_secret"
+## 配置说明
 
-tencent_cloud:
-  secret_id: "your_secret_id"
-  secret_key: "your_secret_key"
-  region: "ap-guangzhou"
+所有配置通过环境变量管理，支持 `.env` 文件或 SCF 控制台配置：
 
-notifications:
-  webhook_url: ""  # 消息推送 Webhook（支持企业微信/钉钉/Discord）
-  email: ""
-```
+| 变量 | 说明 | 必填 |
+|------|------|------|
+| STEAM_API_KEY | Steam Web API 密钥 | 是 |
+| STEAM_USERNAME | Steam 登录用户名 | 是 |
+| STEAM_PASSWORD | Steam 登录密码 | 是 |
+| SCF_REGION | 腾讯云 SCF 部署区域 | 是 |
+| NOTIFY_CHANNEL | 通知渠道 (serverchan/pushplus/qq) | 否 |
+| REDIS_URL | 云数据库 Redis 连接地址 | 否 |
 
-## 📝 开源协议
+## 许可证
 
-本项目采用 [MIT License](LICENSE) 开源协议。
-
----
-
-<p align="center">
-  <b>从零搭建 · 云端运行 · 永久在线</b><br>
-  Made with ❤️ by 沐晴
-</p>
+MIT (c) solcat1007
